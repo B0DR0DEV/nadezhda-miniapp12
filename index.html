@@ -182,6 +182,14 @@ body {
   </div>
 </div>
 
+<div id="wait-block" class="hidden">
+  <div class="pay-box">
+    <h3>⏳ Ожидание проверки</h3>
+    <p>Надежда проверит, дошли ли деньги, и отправит вам отчёт.</p>
+    <p><b>Пока что вернитесь в чат.</b></p>
+  </div>
+</div>
+
 <script>
 const tg = window.Telegram?.WebApp;
 if (tg) {
@@ -329,13 +337,14 @@ function confirmPaid() {
     price: price
   };
 
-  alert("Сейчас отправлю данные: " + JSON.stringify(data));
   try {
     tg.sendData(JSON.stringify(data));
-    alert("sendData вызван успешно");
   } catch (e) {
-    alert("Ошибка отправки: " + e.message);
+    console.error(e);
   }
+
+  document.getElementById('pay-block').classList.add('hidden');
+  document.getElementById('wait-block').classList.remove('hidden');
 }
 </script>
 </body>
