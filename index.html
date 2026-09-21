@@ -104,7 +104,21 @@ body {
 </div>
 
 <div id="main-block">
-  <div class="section-title">1. Формат занятия</div>
+  <div class="section-title">1. Возраст ребёнка</div>
+  <div class="grid" id="age-grid">
+    <div class="card" data-age="young">
+      <div class="icon">👶</div>
+      <div class="title">До 7 лет</div>
+      <div class="sub">1 час</div>
+    </div>
+    <div class="card" data-age="old">
+      <div class="icon">🧑</div>
+      <div class="title">7 лет и старше</div>
+      <div class="sub">1 или 1.5 часа</div>
+    </div>
+  </div>
+
+  <div class="section-title">2. Формат занятия</div>
   <div class="grid" id="format-grid">
     <div class="card" data-format="single">
       <div class="icon">👤</div>
@@ -118,7 +132,7 @@ body {
     </div>
   </div>
 
-  <div class="section-title">2. Направление</div>
+  <div class="section-title">3. Направление</div>
   <div class="grid" id="type-grid">
     <div class="card" data-type="paint">
       <div class="icon">🖌️</div>
@@ -133,7 +147,7 @@ body {
   </div>
 
   <div id="duration-block" class="hidden">
-    <div class="section-title">3. Длительность</div>
+    <div class="section-title">4. Длительность</div>
     <div class="grid" id="duration-grid">
       <div class="card" data-duration="1h">
         <div class="icon">⏱</div>
@@ -199,8 +213,7 @@ if (tg) {
 
 const PAYMENT_URL = "https://www.sberbank.ru/ru/choise_bank?requisiteNumber=79217905435&bankCode=100000000111";
 
-const urlParams = new URLSearchParams(window.location.search);
-const ageGroup = urlParams.get('age') || 'young';
+let ageGroup = null;
 
 let selectedFormat = null;
 let selectedType = null;
@@ -224,6 +237,17 @@ const PRICES = {
   }
 };
 
+// === ВЫБОР ВОЗРАСТА ===
+document.querySelectorAll('#age-grid .card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    document.querySelectorAll('#age-grid .card').forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    ageGroup = card.dataset.age;
+    updateUI();
+  });
+});
+
+// === ВЫБОР ФОРМАТА ===
 document.querySelectorAll('#format-grid .card').forEach(function(card) {
   card.addEventListener('click', function() {
     document.querySelectorAll('#format-grid .card').forEach(function(c) { c.classList.remove('selected'); });
@@ -234,6 +258,7 @@ document.querySelectorAll('#format-grid .card').forEach(function(card) {
   });
 });
 
+// === ВЫБОР НАПРАВЛЕНИЯ ===
 document.querySelectorAll('#type-grid .card').forEach(function(card) {
   card.addEventListener('click', function() {
     if (ageGroup === 'old' && card.dataset.type === 'clay') {
@@ -248,6 +273,7 @@ document.querySelectorAll('#type-grid .card').forEach(function(card) {
   });
 });
 
+// === ВЫБОР ДЛИТЕЛЬНОСТИ ===
 document.querySelectorAll('#duration-grid .card').forEach(function(card) {
   card.addEventListener('click', function() {
     document.querySelectorAll('#duration-grid .card').forEach(function(c) { c.classList.remove('selected'); });
@@ -279,7 +305,7 @@ function updateUI() {
     duration = selectedDuration || '1h';
   }
 
-  if (selectedFormat && selectedType) {
+  if (ageGroup && selectedFormat && selectedType) {
     if (ageGroup === 'young') {
       const key = selectedFormat + '_' + selectedType + '_1h';
       price = PRICES.young[key] || 0;
