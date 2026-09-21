@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Студия Надежды</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg: var(--tg-theme-bg-color, #fff);
+  --text: var(--tg-theme-text-color, #000);
+  --hint: var(--tg-theme-hint-color, #999);
+  --btn: var(--tg-theme-button-color, #2481cc);
+  --card: var(--tg-theme-secondary-bg-color, #f0f0f0);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 16px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.header { text-align: center; margin-bottom: 20px; }
+.header h1 { font-size: 24px; margin-bottom: 4px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header p { color: var(--hint); font-size: 13px; }
+.section-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--hint); text-transform: uppercase; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+}
+.card:active { transform: scale(0.96); }
+.card.selected { border-color: var(--btn); background: rgba(36, 129, 204, 0.1); }
+.card .icon { font-size: 26px; margin-bottom: 4px; }
+.card .title { font-size: 13px; font-weight: 600; }
+.card .sub { font-size: 10px; color: var(--hint); margin-top: 2px; }
+.input-group { margin-bottom: 10px; }
+.input-group label { font-size: 11px; color: var(--hint); margin-bottom: 4px; display: block; }
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(128,128,128,0.2);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+.input-group input:focus { border-color: var(--btn); }
+.summary { background: var(--card); border-radius: 14px; padding: 14px; margin-top: auto; }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+.summary-row.total { font-weight: bold; font-size: 17px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(128,128,128,0.2); }
+.btn-pay {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-pay:active { transform: scale(0.97); }
+.btn-pay:disabled { opacity: 0.4; }
+.hidden { display: none !important; }
+.pay-box {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 16px;
+  text-align: center;
+}
+.pay-box h3 { font-size: 16px; margin-bottom: 12px; }
+.pay-box p { font-size: 13px; color: var(--hint); margin-bottom: 12px; }
+.btn-confirm {
+  width: 100%;
+  padding: 14px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+}
+.btn-confirm:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🎨 Студия Надежды</h1>
+  <p>Рисование и лепка для детей</p>
+</div>
+
+<div id="main-block">
+  <div class="section-title">1. Формат занятия</div>
+  <div class="grid" id="format-grid">
+    <div class="card" data-format="single">
+      <div class="icon">👤</div>
+      <div class="title">Одиночное</div>
+      <div class="sub">Индивидуально</div>
+    </div>
+    <div class="card" data-format="group">
+      <div class="icon">👥</div>
+      <div class="title">Групповое</div>
+      <div class="sub">3+ человек</div>
+    </div>
+  </div>
+
+  <div class="section-title">2. Направление</div>
+  <div class="grid" id="type-grid">
+    <div class="card" data-type="paint">
+      <div class="icon">🖌️</div>
+      <div class="title">Живопись</div>
+      <div class="sub">Краски, холст</div>
+    </div>
+    <div class="card" data-type="clay">
+      <div class="icon">🏺</div>
+      <div class="title">Пластилинография</div>
+      <div class="sub">Лепка</div>
+    </div>
+  </div>
+
+  <div id="duration-block" class="hidden">
+    <div class="section-title">3. Длительность</div>
+    <div class="grid" id="duration-grid">
+      <div class="card" data-duration="1h">
+        <div class="icon">⏱</div>
+        <div class="title">1 час</div>
+      </div>
+      <div class="card" data-duration="1.5h">
+        <div class="icon">⏱</div>
+        <div class="title">1.5 часа</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Данные ученика</div>
+  <div class="input-group">
+    <label>Имя ребёнка</label>
+    <input type="text" id="child-name" placeholder="Например, Аня">
+  </div>
+  <div class="input-group">
+    <label>Фамилия ребёнка</label>
+    <input type="text" id="child-surname" placeholder="Например, Иванова">
+  </div>
+
+  <div class="summary">
+    <div class="summary-row">
+      <span>Формат:</span>
+      <span id="selected-format">—</span>
+    </div>
+    <div class="summary-row">
+      <span>Направление:</span>
+      <span id="selected-type">—</span>
+    </div>
+    <div class="summary-row total">
+      <span>Итого:</span>
+      <span id="total-price">0 ₽</span>
+    </div>
+    <button class="btn-pay" id="pay-btn" disabled onclick="pay()">Оплатить</button>
+  </div>
+</div>
+
+<div id="pay-block" class="hidden">
+  <div class="pay-box">
+    <h3>💳 Оплата</h3>
+    <p>Нажмите кнопку ниже, чтобы перейти к оплате.</p>
+    <button class="btn-pay" onclick="openPayment()">🔗 Перейти к оплате</button>
+    <button class="btn-confirm" onclick="confirmPaid()">✅ Я оплатил</button>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
+
+// ССЫЛКА НА ОПЛАТУ — ЗАМЕНИ НА СВОЮ
+const PAYMENT_URL = "https://www.sberbank.ru/ru/choise_bank?requisiteNumber=79217905435&bankCode=100000000111";
+
+const urlParams = new URLSearchParams(window.location.search);
+const ageGroup = urlParams.get('age') || 'young';
+
+let selectedFormat = null;
+let selectedType = null;
+let selectedDuration = null;
+let formatName = "";
+let typeName = "";
+let price = 0;
+
+const PRICES = {
+  young: {
+    single_paint_1h: 1000,
+    group_paint_1h: 700,
+    single_clay_1h: 1000,
+    group_clay_1h: 800
+  },
+  old: {
+    single_paint_1h: 1000,
+    "single_paint_1.5h": 1300,
+    group_paint_1h: 700,
+    "group_paint_1.5h": 1000
+  }
+};
+
+document.querySelectorAll('#format-grid .card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    document.querySelectorAll('#format-grid .card').forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    selectedFormat = card.dataset.format;
+    formatName = card.querySelector('.title').textContent;
+    updateUI();
+  });
+});
+
+document.querySelectorAll('#type-grid .card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    if (ageGroup === 'old' && card.dataset.type === 'clay') {
+      alert("Для детей 7+ лет доступна только живопись.");
+      return;
+    }
+    document.querySelectorAll('#type-grid .card').forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    selectedType = card.dataset.type;
+    typeName = card.querySelector('.title').textContent;
+    updateUI();
+  });
+});
+
+document.querySelectorAll('#duration-grid .card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    document.querySelectorAll('#duration-grid .card').forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    selectedDuration = card.dataset.duration;
+    updateUI();
+  });
+});
+
+document.getElementById('child-name').addEventListener('input', updateUI);
+document.getElementById('child-surname').addEventListener('input', updateUI);
+
+function updateUI() {
+  document.getElementById('selected-format').textContent = formatName || '—';
+  document.getElementById('selected-type').textContent = typeName || '—';
+
+  const childName = document.getElementById('child-name').value.trim();
+  const childSurname = document.getElementById('child-surname').value.trim();
+
+  const durationBlock = document.getElementById('duration-block');
+  if (ageGroup === 'old' && selectedType === 'paint') {
+    durationBlock.classList.remove('hidden');
+  } else {
+    durationBlock.classList.add('hidden');
+  }
+
+  let duration = '1h';
+  if (ageGroup === 'old' && selectedType === 'paint') {
+    duration = selectedDuration || '1h';
+  }
+
+  if (selectedFormat && selectedType) {
+    if (ageGroup === 'young') {
+      const key = selectedFormat + '_' + selectedType + '_1h';
+      price = PRICES.young[key] || 0;
+    } else {
+      if (selectedType === 'paint') {
+        const key = selectedFormat + '_paint_' + duration;
+        price = PRICES.old[key] || 0;
+      } else {
+        price = 0;
+      }
+    }
+    document.getElementById('total-price').textContent = price + ' ₽';
+
+    let canPay = childName && childSurname && price > 0;
+    if (ageGroup === 'old' && selectedType === 'paint' && !selectedDuration) {
+      canPay = false;
+    }
+    document.getElementById('pay-btn').disabled = !canPay;
+  } else {
+    document.getElementById('total-price').textContent = '0 ₽';
+    document.getElementById('pay-btn').disabled = true;
+  }
+}
+
+function pay() {
+  document.getElementById('main-block').classList.add('hidden');
+  document.getElementById('pay-block').classList.remove('hidden');
+}
+
+function openPayment() {
+  try {
+    tg.openLink(PAYMENT_URL, { try_instant_view: false });
+  } catch (e) {
+    alert("Ошибка открытия ссылки: " + e.message);
+  }
+}
+
+function confirmPaid() {
+  const childName = document.getElementById('child-name').value.trim();
+  const childSurname = document.getElementById('child-surname').value.trim();
+
+  let duration = '1h';
+  if (ageGroup === 'old' && selectedType === 'paint') {
+    duration = selectedDuration || '1h';
+  }
+
+  const data = {
+    action: "pay",
+    age: ageGroup,
+    format: selectedFormat,
+    type: selectedType,
+    duration: duration,
+    childName: childName,
+    childSurname: childSurname,
+    price: price
+  };
+
+  try {
+    tg.sendData(JSON.stringify(data));
+  } catch (e) {
+    alert("Ошибка отправки: " + e.message);
+  }
+}
+</script>
+</body>
+</html>
