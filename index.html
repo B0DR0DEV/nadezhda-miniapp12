@@ -189,10 +189,29 @@ body {
 
 <div id="pay-block" class="hidden">
   <div class="pay-box">
-    <h3>💳 Оплата</h3>
-    <p>Нажмите кнопку ниже, чтобы перейти к оплате.</p>
-    <button class="btn-pay" onclick="openPayment()">🔗 Перейти к оплате</button>
-    <button class="btn-confirm" onclick="confirmPaid()">✅ Я оплатил</button>
+    <h3>💳 Выберите способ оплаты</h3>
+    
+    <button class="btn-pay" onclick="openPayment()">🏦 Сбербанк и Т-Банк</button>
+    <button class="btn-pay" onclick="showCash()">💵 Оплата наличными</button>
+    <button class="btn-pay" onclick="showPhone()">📱 Оплата по номеру телефона</button>
+    
+    <div id="cash-info" class="hidden" style="margin-top: 16px; text-align: left;">
+      <p>Вы можете оплатить занятие <b>наличными прямо на занятии</b>. Просто приходите и отдайте деньги Надежде.</p>
+    </div>
+    
+    <div id="phone-info" class="hidden" style="margin-top: 16px; text-align: left;">
+      <p style="margin-bottom: 8px;">Переведите деньги по номеру телефона:</p>
+      <p style="font-size: 18px; font-weight: bold;">+7 921 790-54-35</p>
+      <p style="margin-top: 8px; color: var(--hint); font-size: 12px;">Через СБП в приложении любого банка.</p>
+    </div>
+    
+    <div id="bank-info" class="hidden" style="margin-top: 16px;">
+      <button class="btn-pay" onclick="goToPayment()">🔗 Перейти к оплате</button>
+      <button class="btn-confirm" onclick="confirmPaid()">✅ Я оплатил</button>
+      <p style="margin-top: 16px; font-size: 15px; font-weight: bold; text-align: center;">
+        Если что-то пошло не так — свяжитесь с Надеждой по кнопке в чате.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -237,7 +256,6 @@ const PRICES = {
   }
 };
 
-// === ВЫБОР ВОЗРАСТА ===
 document.querySelectorAll('#age-grid .card').forEach(function(card) {
   card.addEventListener('click', function() {
     document.querySelectorAll('#age-grid .card').forEach(function(c) { c.classList.remove('selected'); });
@@ -247,7 +265,6 @@ document.querySelectorAll('#age-grid .card').forEach(function(card) {
   });
 });
 
-// === ВЫБОР ФОРМАТА ===
 document.querySelectorAll('#format-grid .card').forEach(function(card) {
   card.addEventListener('click', function() {
     document.querySelectorAll('#format-grid .card').forEach(function(c) { c.classList.remove('selected'); });
@@ -258,7 +275,6 @@ document.querySelectorAll('#format-grid .card').forEach(function(card) {
   });
 });
 
-// === ВЫБОР НАПРАВЛЕНИЯ ===
 document.querySelectorAll('#type-grid .card').forEach(function(card) {
   card.addEventListener('click', function() {
     if (ageGroup === 'old' && card.dataset.type === 'clay') {
@@ -273,7 +289,6 @@ document.querySelectorAll('#type-grid .card').forEach(function(card) {
   });
 });
 
-// === ВЫБОР ДЛИТЕЛЬНОСТИ ===
 document.querySelectorAll('#duration-grid .card').forEach(function(card) {
   card.addEventListener('click', function() {
     document.querySelectorAll('#duration-grid .card').forEach(function(c) { c.classList.remove('selected'); });
@@ -336,6 +351,24 @@ function pay() {
 }
 
 function openPayment() {
+  document.getElementById('bank-info').classList.remove('hidden');
+  document.getElementById('cash-info').classList.add('hidden');
+  document.getElementById('phone-info').classList.add('hidden');
+}
+
+function showCash() {
+  document.getElementById('cash-info').classList.remove('hidden');
+  document.getElementById('phone-info').classList.add('hidden');
+  document.getElementById('bank-info').classList.add('hidden');
+}
+
+function showPhone() {
+  document.getElementById('phone-info').classList.remove('hidden');
+  document.getElementById('cash-info').classList.add('hidden');
+  document.getElementById('bank-info').classList.add('hidden');
+}
+
+function goToPayment() {
   try {
     tg.openLink(PAYMENT_URL, { try_instant_view: false });
   } catch (e) {
